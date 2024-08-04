@@ -1,0 +1,172 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Transform": "AWS::Serverless-2016-10-31",
+  "Description": "An AWS Serverless Application. This template is partially managed by Amazon.Lambda.Annotations (v1.5.0.0).",
+  "Resources": {
+    "LightTrackerServerlessApiGateway": {
+      "Type": "AWS::Serverless::Api",
+      "Properties": {
+        "StageName": "Prod",
+        "Auth": {
+          "DefaultAuthorizer": "CognitoJWTTokenAuthorizer",
+          "Authorizers": {
+            "CognitoJWTTokenAuthorizer": {
+              "UserPoolArn": "<UserPoolArn>",
+              "Identity": {
+                "Header": "Authorization"
+              }
+            }
+          }
+        }
+      }
+    },
+    "LightTrackerServerlessLambdaDeleteDeviceDataFunctionDeleteDeviceDataGenerated": {
+      "Type": "AWS::Serverless::Function",
+      "Metadata": {
+        "Tool": "Amazon.Lambda.Annotations",
+        "SyncedEvents": [
+          "RootDelete"
+        ],
+        "SyncedEventProperties": {
+          "RootDelete": [
+            "Path",
+            "Method"
+          ]
+        }
+      },
+      "Properties": {
+        "Policies": [
+          "AWSLambdaBasicExecutionRole",
+          "AWSLambdaVPCAccessExecutionRole"
+        ],
+        "PackageType": "Zip",
+        "Handler": "LightTrackerServerless::LightTrackerServerless.Lambda.DeleteDeviceDataFunction_DeleteDeviceData_Generated::DeleteDeviceData",
+        "Events": {
+          "RootDelete": {
+            "Type": "Api",
+            "Properties": {
+              "Path": "/{deviceUniqueIdentifier}",
+              "Method": "DELETE",
+              "RestApiId": {
+                "Ref": "LightTrackerServerlessApiGateway"
+              }
+            }
+          }
+        },
+        "CodeUri": ".",
+        "Runtime": "dotnet8"
+      }
+    },
+    "LightTrackerServerlessLambdaPostDeviceDataFunctionPutDeviceDataGenerated": {
+      "Type": "AWS::Serverless::Function",
+      "Metadata": {
+        "Tool": "Amazon.Lambda.Annotations",
+        "SyncedEvents": [
+          "RootPost"
+        ],
+        "SyncedEventProperties": {
+          "RootPost": [
+            "Path",
+            "Method"
+          ]
+        }
+      },
+      "Properties": {
+        "Policies": [
+          "AWSLambdaBasicExecutionRole",
+          "AWSLambdaVPCAccessExecutionRole"
+        ],
+        "PackageType": "Zip",
+        "Handler": "LightTrackerServerless::LightTrackerServerless.Lambda.PostDeviceDataFunction_PutDeviceData_Generated::PutDeviceData",
+        "Events": {
+          "RootPost": {
+            "Type": "Api",
+            "Properties": {
+              "Path": "/",
+              "Method": "POST",
+              "RestApiId": {
+                "Ref": "LightTrackerServerlessApiGateway"
+              }
+            }
+          }
+        },
+        "CodeUri": ".",
+        "Runtime": "dotnet8"
+      }
+    },
+    "LightTrackerServerlessLambdaPutDeviceDataFunctionPutDeviceDataGenerated": {
+      "Type": "AWS::Serverless::Function",
+      "Metadata": {
+        "Tool": "Amazon.Lambda.Annotations",
+        "SyncedEvents": [
+          "RootPut"
+        ],
+        "SyncedEventProperties": {
+          "RootPut": [
+            "Path",
+            "Method"
+          ]
+        }
+      },
+      "Properties": {
+        "Policies": [
+          "AWSLambdaBasicExecutionRole",
+          "AWSLambdaVPCAccessExecutionRole"
+        ],
+        "PackageType": "Zip",
+        "Handler": "LightTrackerServerless::LightTrackerServerless.Lambda.PutDeviceDataFunction_PutDeviceData_Generated::PutDeviceData",
+        "Events": {
+          "RootPut": {
+            "Type": "Api",
+            "Properties": {
+              "Path": "/",
+              "Method": "PUT",
+              "RestApiId": {
+                "Ref": "LightTrackerServerlessApiGateway"
+              }
+            }
+          }
+        },
+        "CodeUri": ".",
+        "Runtime": "dotnet8"
+      }
+    }
+  },
+  "Globals": {
+    "Function": {
+      "Runtime": "dotnet8",
+      "CodeUri": ".",
+      "MemorySize": 512,
+      "Timeout": 30,
+      "VpcConfig": {
+        "SecurityGroupIds": [
+          {
+            "Fn::ImportValue": "LTApplicationSecurityGroup"
+          }
+        ],
+        "SubnetIds": [
+          {
+            "Fn::ImportValue": "LTApplicationSubnetA"
+          },
+          {
+            "Fn::ImportValue": "LTApplicationSubnetB"
+          }
+        ]
+      },
+      "Environment": {
+        "Variables": {
+          "REPOSITORY_TYPE": "memory",
+          "DB_CONNECTION": ""
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "ApiURL": {
+      "Description": "API endpoint URL for Prod environment",
+      "Value": {
+        "Fn::Sub": "https://${LightTrackerServerlessApiGateway}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+      }
+    }
+  }
+}

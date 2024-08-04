@@ -1,0 +1,11 @@
+LightTrackerServerless/bin/*
+LightTrackerServerless/obj/*
+
+LightTrackerServerless.Tests/bin/*
+LightTrackerServerless.Tests/obj/*
+LightTrackerServerless.Tests/.runsettings
+
+LightTrackerServerless.Database/bin/*
+LightTrackerServerless.Database/obj/*
+
+.vs/*
